@@ -1,0 +1,97 @@
+﻿{
+  "healthReporter": {
+    "type": "CsvHealthReporter",
+    "logFileFolder": ".",
+    "logFilePrefix": "HealthReport",
+    "minReportLevel": "Warning",
+    "throttlingPeriodMsec": "1000",
+    "singleLogFileMaximumSizeInMBytes": "8192",
+    "logRetentionInDays": "30",
+    "ensureOutputCanBeSaved": "false"
+  },
+  "inputs": [
+    {
+      "type": "Trace",
+      "traceLevel": "Information"
+    },
+    {
+      "type": "ETW",
+      "sessionNamePrefix": "Memory.Etw.Trace",
+      "cleanupOldSessions": true,
+      "reuseExistingSession": false,
+      // https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/app-domain-resource-monitoring
+      // https://docs.microsoft.com/en-us/dotnet/framework/performance/clr-etw-keywords-and-levels
+      "providers": [
+        {
+          // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
+          "providerName": "Microsoft-Windows-DotNETRuntime",
+          "level": "Verbose",
+          "keywords": "2057" // AppDomainResourceManagementKeyword = 2048 | GCKeyword = 1 | LoaderKeywork = 8
+        },
+        {
+          // see https://docs.microsoft.com/en-us/dotnet/framework/performance/loader-etw-events
+          // see https://msdn.microsoft.com/cs-cz/library/ff357720(v=vs.100).aspx
+          "providerName": "Microsoft-Windows-DotNETRuntimeRundown",
+          "level": "Informational",
+          "keywords": "72" // StartRundownKeyword = 64 | LoaderRundownKeyword = 8
+        },
+        {
+          "providerName": "Microsoft-Windows-HttpService",
+          "level": "Informational"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "type": "UpdateProcessName"
+    },
+    {
+      "type": "drop",
+      "include": "ProcessName != w3wp"
+    },
+    {
+      "type": "UpdateAppDomainName"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "EtwEventTracer",
+      "location": "Traces",
+      "throttleDuration": "0:00:01",
+      "traceAll": false,
+      "eventFieldCollectors": {
+        // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
+        "AppDomainResourceManagement/MemSurvived": "Survived",
+
+        // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
+        "AppDomainResourceManagement/MemAllocated": "Allocated",
+
+        // LoH https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap
+        // See https://docs.microsoft.com/en-us/dotnet/framework/performance/garbage-collection-etw-events#gcheapstats_v1_event
+        "GC/HeapStats": "GenerationSize",
+
+        // See https://docs.microsoft.com/en-us/windows/desktop/http/scenario-2--parser-example-using-etw-tracing
+        "HTTPRequestTraceTask/Deliver": "Url"
+      }
+    }
+  ],
+  "extensions": [
+    {
+      "category": "outputFactory",
+      "type": "EtwEventTracer",
+      "qualifiedTypeName": "Memory.Etw.Trace.Outputs.EtwEventTracer+Factory, Memory.Etw.Trace"
+    },
+    {
+      "category": "filterFactory",
+      "type": "UpdateAppDomainName",
+      "qualifiedTypeName": "Memory.Etw.Trace.Filters.UpdateAppDomainName+Factory, Memory.Etw.Trace"
+    },
+    {
+      "category": "filterFactory",
+      "type": "UpdateProcessName",
+      "qualifiedTypeName": "Memory.Etw.Trace.Filters.UpdateProcessName+Factory, Memory.Etw.Trace"
+    }
+  ],
+  "schemaVersion": "2016-08-11"
+}
