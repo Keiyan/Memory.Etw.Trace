@@ -45,10 +45,10 @@ Memory.Etw.Trace uses the EventFlow library suite and allows to define what diag
       "traceAll": false,
       "eventFieldCollectors": {
         // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
-        "AppDomainResourceManagement/AppDomainMemSurvived": "Survived",
+        "AppDomainResourceManagement/AppDomainMemSurvived": "MemSurvived",
 
         // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
-        "AppDomainResourceManagement/AppDomainMemAllocated": "Allocated",
+        "AppDomainResourceManagement/AppDomainMemAllocated": "MemAllocated",
 
         // LoH https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap
         // See https://docs.microsoft.com/en-us/dotnet/framework/performance/garbage-collection-etw-events#gcheapstats_v1_event
