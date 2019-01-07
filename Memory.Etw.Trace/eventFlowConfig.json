@@ -62,10 +62,10 @@
       "traceAll": false,
       "eventFieldCollectors": {
         // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
-        "AppDomainResourceManagement/MemSurvived": "Survived",
+        "AppDomainResourceManagement/MemSurvived": "MemSurvived",
 
         // see https://docs.microsoft.com/en-us/dotnet/framework/performance/application-domain-resource-monitoring-arm-etw-events
-        "AppDomainResourceManagement/MemAllocated": "Allocated",
+        "AppDomainResourceManagement/MemAllocated": "MemAllocated",
 
         // LoH https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap
         // See https://docs.microsoft.com/en-us/dotnet/framework/performance/garbage-collection-etw-events#gcheapstats_v1_event
